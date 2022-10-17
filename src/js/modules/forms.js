@@ -47,7 +47,7 @@ const forms = () => {
             clearInputs(inputs);
             setTimeout( () => {
                   messageBlock.remove();
-            }, 2000);
+            },2000);
            
         });
       });

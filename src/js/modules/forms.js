@@ -1,60 +1,68 @@
 const forms = () => {
   const forms = document.querySelectorAll("form");
   const inputs = document.querySelectorAll("input");
+  const numberInput = document.querySelectorAll('input[name = "user_phone"]');
 
-  function sendForm() {
-    const messages = {
-      loading: "Идет загрузка",
-      success: "Спасибо, мы вам перезвоним",
-      fail: "Что то пошло не так",
-    };
+  numberInput.forEach( el => {
+        el.addEventListener('input', () =>{
+            el.value = el.value.replace(/\D/g, '' );
+            console.log('ss');
+        });
+  });
 
-   const postData = async (url, data) => {
-      document.querySelector('.status').innerHTML = messages.loading;
-      let result = await fetch(url, {
-            method: 'POST',
-            body: data,
-      });
-     
-      return await result.text();
-   };
+  let clearAllInputs = function (inputSelector) {
+    inputSelector.forEach((input) => {
+      input.value = "";
+    });
+  };
 
-   const clearInputs = (inputsSelector) => {
-      inputsSelector.forEach((input) =>{
-            input.value = '';
-      });
-   };
+  let request = async function (url, data) {
+    document.querySelector(".status").innerHTML = messagesToShow.loading;
+    let fetchRequest = await fetch(url, {
+      method: "POST",
+      body: data,
+    });
 
+    return await fetchRequest.text();
+  };
+
+  let messagesToShow = {
+    loading: "Идет загрузка",
+    sucsess: "Спасибо, мы вам перезвоним",
+    fail: "Неудачная попытка",
+  };
+
+  const sendRequest = function () {
     forms.forEach((form) => {
-      form.addEventListener("submit", function (e) {
+      form.addEventListener("submit", (e) => {
         e.preventDefault();
 
         let messageBlock = document.createElement("div");
         messageBlock.classList.add("status");
-        form.appendChild(messageBlock);
+        form.append(messageBlock);
 
-        const formData = new FormData(form);
+        let formData = new FormData(form);
 
-        postData('/assets/server.php', formData)
-        .then((infoText) => {
-            console.log(infoText);
-            messageBlock.innerHTML = messages.success;                  
-        })
-        .catch(() => {
-            messageBlock.innerHTML = messages.fail; 
-        })
-        .finally(() => {
-            clearInputs(inputs);
+        request("/assets/server.php", formData)
+          .then((request) => {
+            messageBlock.innerHTML = messagesToShow.sucsess;
+            console.log(request);
+          })
+          .catch((error) => {
+            messageBlock.innerHTML = messagesToShow.error;
+            console.throw(error);
+          })
+          .finally( () =>{
+            clearAllInputs(inputs);
             setTimeout( () => {
-                  messageBlock.remove();
-            },2000);
-           
-        });
+              messageBlock.remove();              
+            }, 5000);
+          } );
       });
     });
-  }
+  };
 
-  sendForm();
+  sendRequest();
 };
 
 export default forms;

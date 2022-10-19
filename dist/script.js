@@ -15185,9 +15185,10 @@ __webpack_require__.r(__webpack_exports__);
 
 
 window.document.addEventListener('DOMContentLoaded', () => {
-  Object(_modules_modals__WEBPACK_IMPORTED_MODULE_1__["default"])();
+  Object(_modules_modals__WEBPACK_IMPORTED_MODULE_1__["default"])(); //-------------------------------
+
   Object(_modules_tabs__WEBPACK_IMPORTED_MODULE_2__["default"])(".glazing_slider", ".glazing_block", ".glazing_content", "active");
-  Object(_modules_tabs__WEBPACK_IMPORTED_MODULE_2__["default"])(".decoration_slider", ".no_click", ".decoration_content > div > div", "after_click"); //
+  Object(_modules_tabs__WEBPACK_IMPORTED_MODULE_2__["default"])(".decoration_slider", ".no_click", ".decoration_content > div > div", "after_click"); //-------------------------------
 
   Object(_modules_forms__WEBPACK_IMPORTED_MODULE_3__["default"])();
 });
@@ -15203,55 +15204,67 @@ window.document.addEventListener('DOMContentLoaded', () => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var core_js_modules_es_string_replace__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/es.string.replace */ "./node_modules/core-js/modules/es.string.replace.js");
+/* harmony import */ var core_js_modules_es_string_replace__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_string_replace__WEBPACK_IMPORTED_MODULE_0__);
+
+
 const forms = () => {
   const forms = document.querySelectorAll("form");
   const inputs = document.querySelectorAll("input");
+  const numberInput = document.querySelectorAll('input[name = "user_phone"]');
+  numberInput.forEach(el => {
+    el.addEventListener('input', () => {
+      el.value = el.value.replace(/\D/g, '');
+      console.log('ss');
+    });
+  });
 
-  function sendForm() {
-    const messages = {
-      loading: "Идет загрузка",
-      success: "Спасибо, мы вам перезвоним",
-      fail: "Что то пошло не так"
-    };
+  let clearAllInputs = function clearAllInputs(inputSelector) {
+    inputSelector.forEach(input => {
+      input.value = "";
+    });
+  };
 
-    const postData = async (url, data) => {
-      document.querySelector('.status').innerHTML = messages.loading;
-      let result = await fetch(url, {
-        method: 'POST',
-        body: data
-      });
-      return await result.text();
-    };
+  let request = async function request(url, data) {
+    document.querySelector(".status").innerHTML = messagesToShow.loading;
+    let fetchRequest = await fetch(url, {
+      method: "POST",
+      body: data
+    });
+    return await fetchRequest.text();
+  };
 
-    const clearInputs = inputsSelector => {
-      inputsSelector.forEach(input => {
-        input.value = '';
-      });
-    };
+  let messagesToShow = {
+    loading: "Идет загрузка",
+    sucsess: "Спасибо, мы вам перезвоним",
+    fail: "Неудачная попытка"
+  };
 
+  const sendRequest = function sendRequest() {
     forms.forEach(form => {
-      form.addEventListener("submit", function (e) {
+      form.addEventListener("submit", e => {
         e.preventDefault();
         let messageBlock = document.createElement("div");
         messageBlock.classList.add("status");
-        form.appendChild(messageBlock);
-        const formData = new FormData(form);
-        postData('/assets/server.php', formData).then(infoText => {
-          console.log(infoText);
-          messageBlock.innerHTML = messages.success;
-        }).catch(() => {
-          messageBlock.innerHTML = messages.fail;
+        form.append(messageBlock);
+        let formData = new FormData(form);
+        request("/assets/server.php", formData).then(request => {
+          messageBlock.innerHTML = messagesToShow.sucsess;
+          console.log(request);
+        }).catch(error => {
+          messageBlock.innerHTML = messagesToShow.error;
+          console.throw(error);
         }).finally(() => {
-          clearInputs(inputs);
+          clearAllInputs(inputs);
           setTimeout(() => {
             messageBlock.remove();
-          }, 2000);
+          }, 5000);
         });
       });
     });
-  }
+  };
 
-  sendForm();
+  sendRequest();
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (forms);

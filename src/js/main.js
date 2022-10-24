@@ -5,9 +5,10 @@ import tabs from './modules/tabs';
 import forms from './modules/forms';
 
 window.document.addEventListener('DOMContentLoaded', () => {
- 
+  'use_strict';
+
     modals();
-    
+
     //-------------------------------
     
     tabs(".glazing_slider", ".glazing_block", ".glazing_content", "active");
@@ -15,8 +16,9 @@ window.document.addEventListener('DOMContentLoaded', () => {
       ".decoration_slider",
       ".no_click",
       ".decoration_content > div > div",
-      "after_click"
+      "after_click",      
     );
+    tabs(".balcon_icons", ".balcon_icons_img", ".big_img > img", "do_image_more", "inline-block");
 
     //-------------------------------
 

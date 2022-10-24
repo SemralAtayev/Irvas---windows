@@ -15185,10 +15185,13 @@ __webpack_require__.r(__webpack_exports__);
 
 
 window.document.addEventListener('DOMContentLoaded', () => {
+  'use_strict';
+
   Object(_modules_modals__WEBPACK_IMPORTED_MODULE_1__["default"])(); //-------------------------------
 
   Object(_modules_tabs__WEBPACK_IMPORTED_MODULE_2__["default"])(".glazing_slider", ".glazing_block", ".glazing_content", "active");
-  Object(_modules_tabs__WEBPACK_IMPORTED_MODULE_2__["default"])(".decoration_slider", ".no_click", ".decoration_content > div > div", "after_click"); //-------------------------------
+  Object(_modules_tabs__WEBPACK_IMPORTED_MODULE_2__["default"])(".decoration_slider", ".no_click", ".decoration_content > div > div", "after_click");
+  Object(_modules_tabs__WEBPACK_IMPORTED_MODULE_2__["default"])(".balcon_icons", ".balcon_icons_img", ".big_img > img", "do_image_more", "inline-block"); //-------------------------------
 
   Object(_modules_forms__WEBPACK_IMPORTED_MODULE_3__["default"])();
 });
@@ -15281,29 +15284,43 @@ const forms = () => {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 const modals = () => {
-  function bindModal(modalTriggerSelector, modalWindowSelector, dataModalCloseSelector) {
-    let modalTrigger = document.querySelectorAll(modalTriggerSelector);
-    let modalWindow = document.querySelector(modalWindowSelector);
-    let modalClose = document.querySelectorAll(dataModalCloseSelector);
+  function bindModal(modalTriggerSelector, modalWindowSelector, dataModalCloseSelector, closeOnOverlays = true) {
+    const modalTrigger = document.querySelectorAll(modalTriggerSelector);
+    const modalWindow = document.querySelector(modalWindowSelector);
+    const modalClose = document.querySelectorAll(dataModalCloseSelector);
+    const windows = document.querySelectorAll("[data-modal]"); //click on trigger to call modal block
+
     modalTrigger.forEach(item => {
       item.addEventListener("click", e => {
-        e.preventDefault();
-        modalWindow.classList.add('fadeIn', 'd-block', 'animated');
-        modalWindow.classList.remove('fadeOut', 'd-none');
+        e.preventDefault(); //close all modal windows
+
+        windows.forEach(e => {
+          e.classList.remove("fadeIn", "d-block", "animated");
+          e.classList.add("fadeOut", "d-none");
+        });
+        modalWindow.classList.add("fadeIn", "d-block", "animated");
+        modalWindow.classList.remove("fadeOut", "d-none");
         document.body.style.overflow = "hidden";
       });
-    });
+    }); // click on close button to xlose modal block
+
     modalClose.forEach(item => {
       item.addEventListener("click", () => {
-        modalWindow.classList.remove('fadeIn', 'd-block');
-        modalWindow.classList.add('fadeOut', 'd-none');
+        modalWindow.classList.remove("fadeIn", "d-block");
+        modalWindow.classList.add("fadeOut", "d-none");
         document.body.style.overflow = "";
       });
-    });
+    }); // click on other space than modal window
+
     modalWindow.addEventListener("click", e => {
-      if (e.target && e.target === modalWindow) {
-        modalWindow.classList.remove('fadeIn', 'd-block');
-        modalWindow.classList.add('fadeOut', 'd-none');
+      if (e.target && e.target === modalWindow && closeOnOverlays) {
+        //close all modal windows
+        windows.forEach(e => {
+          e.classList.remove("fadeIn", "d-block", "animated");
+          e.classList.add("fadeOut", "d-none");
+        });
+        modalWindow.classList.remove("fadeIn", "d-block");
+        modalWindow.classList.add("fadeOut", "d-none");
         document.body.style.overflow = "";
       }
     });
@@ -15311,14 +15328,16 @@ const modals = () => {
 
   function timerModal(selector, timer) {
     setTimeout(function () {
-      document.querySelector(selector).style.display = 'block';
+      document.querySelector(selector).style.display = "block";
       document.body.style.overflow = "hidden";
     }, timer);
   }
 
   bindModal(".popup_engineer_btn", ".popup_engineer", ".popup_engineer [data-modal-close]");
   bindModal(".popup_calc_btn", ".popup_calc", ".popup_calc [data-modal-close]");
-  bindModal(".phone_link", ".popup", ".popup [data-modal-close]"); // timerModal('.popup', 120000);
+  bindModal(".phone_link", ".popup", ".popup [data-modal-close]");
+  bindModal('.popup_calc_button', '.popup_calc_profile', '.popup_calc_profile_close', false);
+  bindModal('.popup_calc_profile_button', '.popup_calc_end', '.popup_calc_end_close', false); // timerModal('.popup', 120000);
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (modals);
@@ -15426,16 +15445,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var core_js_modules_es_string_replace__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_string_replace__WEBPACK_IMPORTED_MODULE_0__);
 
 
-const tabs = (tabHeaderSelector, tabSelector, contentBlockSelector, activeClassSelector) => {
+const tabs = (tabHeaderSelector, tabsSelector, contentBlockSelector, activeClassSelector, display = 'block') => {
   let tabHeader = document.querySelector(tabHeaderSelector);
-  let tabs = document.querySelectorAll(tabSelector);
+  let tabs = document.querySelectorAll(tabsSelector);
   let contentBlock = document.querySelectorAll(contentBlockSelector);
 
   function closeTabsContent() {
     contentBlock.forEach(item => {
       // item.style.display = "none";
       item.classList.remove("fadeIn", "d-block", "animated");
-      item.classList.add("fadeOut", "d-none", "animated");
+      item.classList.add("fadeOut", "animated");
+      item.style.display = "none";
     });
     tabs.forEach(tab => {
       tab.classList.remove(activeClassSelector);
@@ -15445,14 +15465,15 @@ const tabs = (tabHeaderSelector, tabSelector, contentBlockSelector, activeClassS
   function openCurrentTab(i = 0) {
     // contentBlock[i].style.display = "block";
     contentBlock[i].classList.remove("fadeOut", "d-none", "animated");
-    contentBlock[i].classList.add("fadeIn", "d-block", "animated");
+    contentBlock[i].classList.add("fadeIn", "animated");
+    contentBlock[i].style.display = display;
     tabs[i].classList.add(activeClassSelector);
   }
 
   tabHeader.addEventListener("click", e => {
     const target = e.target;
 
-    if (target && (target.classList.contains(tabSelector.replace(/\./, "")) || target.parentNode.classList.contains(tabSelector.replace(/\./, "")))) {
+    if (target && (target.classList.contains(tabsSelector.replace(/\./, "")) || target.parentNode.classList.contains(tabsSelector.replace(/\./, "")))) {
       tabs.forEach((item, n) => {
         if (target == item || target.parentNode == item) {
           closeTabsContent();

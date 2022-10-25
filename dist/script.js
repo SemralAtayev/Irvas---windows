@@ -15180,6 +15180,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_modals__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/modals */ "./src/js/modules/modals.js");
 /* harmony import */ var _modules_tabs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/tabs */ "./src/js/modules/tabs.js");
 /* harmony import */ var _modules_forms__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/forms */ "./src/js/modules/forms.js");
+/* harmony import */ var _modules_stateModule__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/stateModule */ "./src/js/modules/stateModule.js");
+
 
 
 
@@ -15187,13 +15189,15 @@ __webpack_require__.r(__webpack_exports__);
 window.document.addEventListener('DOMContentLoaded', () => {
   'use_strict';
 
+  let stateVar = {};
+  Object(_modules_stateModule__WEBPACK_IMPORTED_MODULE_4__["default"])(stateVar);
   Object(_modules_modals__WEBPACK_IMPORTED_MODULE_1__["default"])(); //-------------------------------
 
   Object(_modules_tabs__WEBPACK_IMPORTED_MODULE_2__["default"])(".glazing_slider", ".glazing_block", ".glazing_content", "active");
   Object(_modules_tabs__WEBPACK_IMPORTED_MODULE_2__["default"])(".decoration_slider", ".no_click", ".decoration_content > div > div", "after_click");
   Object(_modules_tabs__WEBPACK_IMPORTED_MODULE_2__["default"])(".balcon_icons", ".balcon_icons_img", ".big_img > img", "do_image_more", "inline-block"); //-------------------------------
 
-  Object(_modules_forms__WEBPACK_IMPORTED_MODULE_3__["default"])();
+  Object(_modules_forms__WEBPACK_IMPORTED_MODULE_3__["default"])(stateVar);
 });
 
 /***/ }),
@@ -15211,7 +15215,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var core_js_modules_es_string_replace__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_string_replace__WEBPACK_IMPORTED_MODULE_0__);
 
 
-const forms = () => {
+const forms = state => {
   const forms = document.querySelectorAll("form");
   const inputs = document.querySelectorAll("input");
   const numberInput = document.querySelectorAll('input[name = "user_phone"]');
@@ -15251,6 +15255,13 @@ const forms = () => {
         messageBlock.classList.add("status");
         form.append(messageBlock);
         let formData = new FormData(form);
+
+        if (form.getAttribute('data-form') == 'end') {
+          for (let key in state) {
+            formData.append(key, state[key]);
+          }
+        }
+
         request("/assets/server.php", formData).then(request => {
           messageBlock.innerHTML = messagesToShow.sucsess;
           console.log(request);
@@ -15310,7 +15321,7 @@ const modals = () => {
         modalWindow.classList.add("fadeOut", "d-none");
         document.body.style.overflow = "";
       });
-    }); // click on other space than modal window
+    }); // click on other space rather than modal window
 
     modalWindow.addEventListener("click", e => {
       if (e.target && e.target === modalWindow && closeOnOverlays) {
@@ -15429,6 +15440,58 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default()(function () {
     }]
   });
 });
+
+/***/ }),
+
+/***/ "./src/js/modules/stateModule.js":
+/*!***************************************!*\
+  !*** ./src/js/modules/stateModule.js ***!
+  \***************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+const stateFunction = function stateFunction(state) {
+  const balkonIcons = document.querySelectorAll(".balcon_icons_img");
+  const balkonWidth = document.querySelectorAll("#width");
+  const balkonHeight = document.querySelectorAll("#height");
+  const tipStekla = document.querySelectorAll("#view_type");
+  const temperaturaStekla = document.querySelectorAll(".checkbox");
+
+  const appendToState = function appendToState(selector, event, prop) {
+    selector.forEach((item, i) => {
+      item.addEventListener(event, () => {
+        if (item.nodeName == "INPUT") {
+          if (item.type == "checkbox") {
+            i === 0 ? state[prop] = "холодный" : state[prop] = "Теплый";
+            selector.forEach((event, j) => {
+              event.checked = false;
+
+              if (i == j) {
+                event.checked = true;
+              }
+            });
+          } else {
+            state[prop] = item.value;
+          }
+        } else if (item.nodeName == "SELECT") {
+          state[prop] = item.value;
+        } else {
+          state[prop] = i;
+        }
+      });
+    });
+  };
+
+  appendToState(balkonIcons, "click", "balkonForm");
+  appendToState(balkonWidth, "input", "shirina");
+  appendToState(balkonHeight, "input", "visota");
+  appendToState(tipStekla, "input", "tipStekla");
+  appendToState(temperaturaStekla, "change", "temperatura"); // console.log(balkonIcons);
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (stateFunction);
 
 /***/ }),
 

@@ -3,9 +3,14 @@ import './modules/slider';
 import modals from './modules/modals';
 import tabs from './modules/tabs';
 import forms from './modules/forms';
+import stateFunction from './modules/stateModule';
 
 window.document.addEventListener('DOMContentLoaded', () => {
   'use_strict';
+
+    let stateVar = {};
+
+    stateFunction(stateVar);
 
     modals();
 
@@ -22,5 +27,5 @@ window.document.addEventListener('DOMContentLoaded', () => {
 
     //-------------------------------
 
-    forms();
+    forms(stateVar);
 });

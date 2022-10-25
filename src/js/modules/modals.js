@@ -36,7 +36,7 @@ const modals = () => {
       });
     });
 
-    // click on other space than modal window
+    // click on other space rather than modal window
     modalWindow.addEventListener("click", (e) => {
       if (e.target && e.target === modalWindow && closeOnOverlays) {
 

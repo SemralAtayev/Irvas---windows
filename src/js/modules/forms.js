@@ -1,4 +1,6 @@
-const forms = () => {
+
+
+const forms = (state) => {
   const forms = document.querySelectorAll("form");
   const inputs = document.querySelectorAll("input");
   const numberInput = document.querySelectorAll('input[name = "user_phone"]');
@@ -42,6 +44,11 @@ const forms = () => {
         form.append(messageBlock);
 
         let formData = new FormData(form);
+        if(form.getAttribute('data-form') == 'end'){
+            for (let key in state){
+              formData.append(key, state[key]);
+            }
+        }
 
         request("/assets/server.php", formData)
           .then((request) => {

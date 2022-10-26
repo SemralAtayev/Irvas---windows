@@ -1,16 +1,10 @@
-
+import checkForNumbers from "./checkForNumbers";
 
 const forms = (state) => {
   const forms = document.querySelectorAll("form");
   const inputs = document.querySelectorAll("input");
-  const numberInput = document.querySelectorAll('input[name = "user_phone"]');
 
-  numberInput.forEach( el => {
-        el.addEventListener('input', () =>{
-            el.value = el.value.replace(/\D/g, '' );
-            console.log('ss');
-        });
-  });
+  checkForNumbers('input[name = "user_phone"]');
 
   let clearAllInputs = function (inputSelector) {
     inputSelector.forEach((input) => {
@@ -44,10 +38,10 @@ const forms = (state) => {
         form.append(messageBlock);
 
         let formData = new FormData(form);
-        if(form.getAttribute('data-form') == 'end'){
-            for (let key in state){
-              formData.append(key, state[key]);
-            }
+        if (form.getAttribute("data-form") == "end") {
+          for (let key in state) {
+            formData.append(key, state[key]);
+          }
         }
 
         request("/assets/server.php", formData)
@@ -59,12 +53,22 @@ const forms = (state) => {
             messageBlock.innerHTML = messagesToShow.error;
             console.throw(error);
           })
-          .finally( () =>{
+          .finally(() => {
             clearAllInputs(inputs);
-            setTimeout( () => {
-              messageBlock.remove();              
+            setTimeout(() => {
+              //delete message block
+              messageBlock.remove();
+              //close all modal windows
+              document.querySelectorAll("[data-modal]").forEach((e) => {
+                e.classList.remove("fadeIn", "d-block", "animated");
+                e.classList.add("fadeOut", "d-none");
+              });
+              document.body.style.overflow = "";
+              // clear fomr data
+              formData = {};
+              console.log(formData);
             }, 5000);
-          } );
+          });
       });
     });
   };

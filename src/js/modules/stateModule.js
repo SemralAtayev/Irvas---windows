@@ -1,3 +1,5 @@
+import checkForNumbers from "./checkForNumbers";
+
 const stateFunction = function (state) {
   const balkonIcons = document.querySelectorAll(".balcon_icons_img");
   const balkonWidth = document.querySelectorAll("#width");
@@ -5,29 +7,29 @@ const stateFunction = function (state) {
   const tipStekla = document.querySelectorAll("#view_type");
   const temperaturaStekla = document.querySelectorAll(".checkbox");
 
+  checkForNumbers("#width");
+  checkForNumbers("#height");
+
   const appendToState = function (selector, event, prop) {
     selector.forEach((item, i) => {
       item.addEventListener(event, () => {
         if (item.nodeName == "INPUT") {
           if (item.type == "checkbox") {
             i === 0 ? (state[prop] = "холодный") : (state[prop] = "Теплый");
-            
-            selector.forEach((event, j) => {
-              event.checked = false;
+
+            selector.forEach((selected, j) => {
+                selected.checked = false;
               if (i == j) {
-                event.checked = true;
+                selected.checked = true;
               }
             });
           } else {
             state[prop] = item.value;
-            
           }
         } else if (item.nodeName == "SELECT") {
           state[prop] = item.value;
-          
         } else {
           state[prop] = i;
-          
         }
       });
     });

@@ -15202,10 +15202,10 @@ window.document.addEventListener('DOMContentLoaded', () => {
 
 /***/ }),
 
-/***/ "./src/js/modules/forms.js":
-/*!*********************************!*\
-  !*** ./src/js/modules/forms.js ***!
-  \*********************************/
+/***/ "./src/js/modules/checkForNumbers.js":
+/*!*******************************************!*\
+  !*** ./src/js/modules/checkForNumbers.js ***!
+  \*******************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -15215,16 +15215,35 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var core_js_modules_es_string_replace__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_string_replace__WEBPACK_IMPORTED_MODULE_0__);
 
 
+const checkForNumbers = function checkForNumbers(selector) {
+  const elem = document.querySelectorAll(selector);
+  elem.forEach(el => {
+    el.addEventListener('input', () => {
+      el.value = el.value.replace(/\D/g, '');
+    });
+  });
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (checkForNumbers);
+
+/***/ }),
+
+/***/ "./src/js/modules/forms.js":
+/*!*********************************!*\
+  !*** ./src/js/modules/forms.js ***!
+  \*********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _checkForNumbers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./checkForNumbers */ "./src/js/modules/checkForNumbers.js");
+
+
 const forms = state => {
   const forms = document.querySelectorAll("form");
   const inputs = document.querySelectorAll("input");
-  const numberInput = document.querySelectorAll('input[name = "user_phone"]');
-  numberInput.forEach(el => {
-    el.addEventListener('input', () => {
-      el.value = el.value.replace(/\D/g, '');
-      console.log('ss');
-    });
-  });
+  Object(_checkForNumbers__WEBPACK_IMPORTED_MODULE_0__["default"])('input[name = "user_phone"]');
 
   let clearAllInputs = function clearAllInputs(inputSelector) {
     inputSelector.forEach(input => {
@@ -15256,7 +15275,7 @@ const forms = state => {
         form.append(messageBlock);
         let formData = new FormData(form);
 
-        if (form.getAttribute('data-form') == 'end') {
+        if (form.getAttribute("data-form") == "end") {
           for (let key in state) {
             formData.append(key, state[key]);
           }
@@ -15271,7 +15290,17 @@ const forms = state => {
         }).finally(() => {
           clearAllInputs(inputs);
           setTimeout(() => {
-            messageBlock.remove();
+            //delete message block
+            messageBlock.remove(); //close all modal windows
+
+            document.querySelectorAll("[data-modal]").forEach(e => {
+              e.classList.remove("fadeIn", "d-block", "animated");
+              e.classList.add("fadeOut", "d-none");
+            });
+            document.body.style.overflow = ""; // clear fomr data
+
+            formData = {};
+            console.log(formData);
           }, 5000);
         });
       });
@@ -15299,7 +15328,15 @@ const modals = () => {
     const modalTrigger = document.querySelectorAll(modalTriggerSelector);
     const modalWindow = document.querySelector(modalWindowSelector);
     const modalClose = document.querySelectorAll(dataModalCloseSelector);
-    const windows = document.querySelectorAll("[data-modal]"); //click on trigger to call modal block
+    const windows = document.querySelectorAll("[data-modal]");
+    const parentBlock = document.querySelector(".popup_calc").querySelectorAll('input');
+    parentBlock.forEach(element => {
+      element.addEventListener('input', event => {
+        if (event.target.value) {
+          console.log(event.target.value);
+        }
+      });
+    }); //click on trigger to call modal block
 
     modalTrigger.forEach(item => {
       item.addEventListener("click", e => {
@@ -15452,12 +15489,17 @@ jquery__WEBPACK_IMPORTED_MODULE_0___default()(function () {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _checkForNumbers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./checkForNumbers */ "./src/js/modules/checkForNumbers.js");
+
+
 const stateFunction = function stateFunction(state) {
   const balkonIcons = document.querySelectorAll(".balcon_icons_img");
   const balkonWidth = document.querySelectorAll("#width");
   const balkonHeight = document.querySelectorAll("#height");
   const tipStekla = document.querySelectorAll("#view_type");
   const temperaturaStekla = document.querySelectorAll(".checkbox");
+  Object(_checkForNumbers__WEBPACK_IMPORTED_MODULE_0__["default"])("#width");
+  Object(_checkForNumbers__WEBPACK_IMPORTED_MODULE_0__["default"])("#height");
 
   const appendToState = function appendToState(selector, event, prop) {
     selector.forEach((item, i) => {
@@ -15465,11 +15507,11 @@ const stateFunction = function stateFunction(state) {
         if (item.nodeName == "INPUT") {
           if (item.type == "checkbox") {
             i === 0 ? state[prop] = "холодный" : state[prop] = "Теплый";
-            selector.forEach((event, j) => {
-              event.checked = false;
+            selector.forEach((selected, j) => {
+              selected.checked = false;
 
               if (i == j) {
-                event.checked = true;
+                selected.checked = true;
               }
             });
           } else {

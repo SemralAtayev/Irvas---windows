@@ -9,6 +9,16 @@ const modals = () => {
     const modalWindow = document.querySelector(modalWindowSelector);
     const modalClose = document.querySelectorAll(dataModalCloseSelector);
     const windows = document.querySelectorAll("[data-modal]");
+    const parentBlock = document.querySelector(".popup_calc").querySelectorAll('input');
+    
+    parentBlock.forEach((element) =>{
+      element.addEventListener('input', (event)=>{
+          if(event.target.value){
+             console.log(event.target.value);
+          }
+      });
+    });
+
 
     //click on trigger to call modal block
     modalTrigger.forEach((item) => {
